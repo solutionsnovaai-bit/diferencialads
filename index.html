@@ -4,184 +4,696 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Proposta Comercial — Diferencial Soluções</title>
-  <meta name="description" content="Plano de crescimento digital completo: Instagram, conteúdo semanal e Meta Ads direcionando leads qualificados." />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="logo.jpeg" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            creme: '#EDE5D8',
+            'creme-light': '#F5F0E8',
+            marrom: '#6B3A1F',
+            'marrom-mid': '#8B4E28',
+            'marrom-dark': '#2E1506',
+            gold: '#C9A96E',
+            'gold-light': '#E2C99A',
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body: ['Outfit', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; background: #EDE5D8; overflow-x: hidden; }
+
+    /* ── LOADER ── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #2E1506;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0;
+    }
+    #loader-logo {
+      width: 180px; height: 180px;
+      border-radius: 28px;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(0.7);
+      box-shadow: 0 0 80px rgba(201,169,110,0.25);
+    }
+    #loader-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: #EDE5D8;
+      letter-spacing: 0.04em;
+      margin-top: 28px;
+      opacity: 0;
+    }
+    #loader-sub {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #C9A96E;
+      margin-top: 8px;
+      opacity: 0;
+    }
+    #loader-bar-wrap {
+      margin-top: 48px;
+      width: 200px;
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      position: relative;
+      opacity: 0;
+    }
+    #loader-bar {
+      position: absolute; top: 0; left: 0;
+      height: 100%;
+      width: 0%;
+      background: #C9A96E;
+      transition: width 0.05s linear;
+    }
+
+    /* ── THREE BG ── */
+    #three-canvas {
+      position: fixed; inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* ── GENERAL ── */
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(30px); }
+
+    /* Gold line */
+    .gold-line {
+      display: block; width: 48px; height: 1px;
+      background: #C9A96E; margin-bottom: 20px;
+    }
+
+    /* Week cards */
+    .week-card {
+      background: rgba(245,240,232,0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(107,58,31,0.12);
+      border-radius: 20px;
+      padding: 36px 32px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .week-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(46,21,6,0.12);
+    }
+
+    /* Pricing dark card */
+    .pricing-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,169,110,0.3);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+    }
+
+    /* Floating orb background elements */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+    }
+
+    /* Animated underline on CTA */
+    .btn-cta {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #6B3A1F;
+      color: #EDE5D8;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 18px 44px;
+      border-radius: 60px;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.25s ease;
+    }
+    .btn-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: #3D1F0A;
+      transform: translateX(-100%);
+      transition: transform 0.35s ease;
+      border-radius: inherit;
+    }
+    .btn-cta:hover::before { transform: translateX(0); }
+    .btn-cta span { position: relative; z-index: 1; }
+    .btn-cta:hover { transform: translateY(-3px); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: #6B3A1F;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 18px 44px;
+      border-radius: 60px;
+      border: 1px solid rgba(107,58,31,0.35);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .btn-ghost:hover {
+      background: rgba(107,58,31,0.06);
+      border-color: #6B3A1F;
+      transform: translateY(-3px);
+    }
+
+    /* Feature icon */
+    .feat-dot {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(201,169,110,0.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    /* Noise overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 998;
+    }
+
+    /* Decorative large logo watermark */
+    .logo-watermark {
+      position: absolute;
+      right: -60px; top: 50%;
+      transform: translateY(-50%);
+      width: 420px; height: 420px;
+      object-fit: contain;
+      opacity: 0.05;
+      border-radius: 48px;
+      pointer-events: none;
+    }
+
+    /* Section logo badge */
+    .section-logo {
+      width: 72px; height: 72px;
+      border-radius: 18px;
+      object-fit: cover;
+      box-shadow: 0 8px 32px rgba(46,21,6,0.18);
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
-  <section class="hero">
-    <header>
-      <div class="logo-wrap">
-        <img src="logo.jpeg" alt="Diferencial Soluções" />
-        <div class="logo-name">
-          Diferencial
-          <span>Soluções</span>
+  <!-- ══════════════ LOADING SCREEN ══════════════ -->
+  <div id="loader">
+    <img id="loader-logo" src="logo.jpeg" alt="Diferencial Soluções" />
+    <div id="loader-brand">Diferencial Soluções</div>
+    <div id="loader-sub">Proposta Comercial · 2026</div>
+    <div id="loader-bar-wrap">
+      <div id="loader-bar"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ THREE.JS CANVAS ══════════════ -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- ══════════════════════ MAIN ══════════════════════ -->
+  <main style="position: relative; z-index: 1;">
+
+    <!-- ═══ HERO ═══ -->
+    <section class="relative min-h-screen flex flex-col overflow-hidden px-6 md:px-16 lg:px-24">
+
+      <!-- Orbs -->
+      <div class="orb" style="width:500px;height:500px;background:rgba(107,58,31,0.1);top:-150px;right:-100px;"></div>
+      <div class="orb" style="width:300px;height:300px;background:rgba(201,169,110,0.07);bottom:50px;left:-80px;"></div>
+
+      <!-- Watermark logo -->
+      <img src="logo.jpeg" class="logo-watermark" alt="" />
+
+      <!-- Header -->
+      <header id="main-header" class="flex items-center justify-between py-8 border-b border-marrom border-opacity-10" style="opacity:0;">
+        <div class="flex items-center gap-4">
+          <img src="logo.jpeg" alt="Diferencial Soluções" class="w-16 h-16 rounded-2xl object-cover shadow-lg" />
+          <div>
+            <div class="font-display text-xl font-medium text-marrom-dark tracking-wide">Diferencial</div>
+            <div class="font-body text-xs tracking-widest uppercase text-gold" style="letter-spacing:0.2em;">Soluções</div>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-gold opacity-80"></div>
+          <span class="font-body text-xs tracking-widest uppercase text-marrom opacity-60" style="letter-spacing:0.18em;">Proposta Comercial</span>
+        </div>
+      </header>
+
+      <!-- Hero body -->
+      <div class="flex-1 flex flex-col justify-center py-16 max-w-3xl">
+        <div id="hero-eyebrow" style="opacity:0;" class="flex items-center gap-3 mb-8">
+          <span class="gold-line" style="margin-bottom:0;"></span>
+          <span class="font-body text-xs tracking-widest uppercase text-gold">Plano de Crescimento Digital</span>
+        </div>
+
+        <h1 id="hero-title" style="opacity:0;" class="font-display text-6xl md:text-8xl lg:text-9xl font-400 leading-none text-marrom-dark mb-8">
+          Presença<br/>digital<br/><em class="text-marrom italic">do zero.</em>
+        </h1>
+
+        <p id="hero-sub" style="opacity:0;" class="font-body text-base md:text-lg text-marrom-mid opacity-70 max-w-lg leading-relaxed font-light">
+          Construção do Instagram, conteúdo semanal e Meta Ads direcionando 
+          leads qualificados direto para a <strong class="font-medium text-marrom">Bruna</strong> no WhatsApp — em 30 dias.
+        </p>
+      </div>
+
+      <!-- Hero footer stats -->
+      <div id="hero-stats" style="opacity:0;" class="flex flex-wrap items-center gap-8 py-8 border-t border-marrom border-opacity-10">
+        <div>
+          <div class="font-display text-2xl font-medium text-marrom-dark">Bruna</div>
+          <div class="font-body text-xs uppercase tracking-widest text-marrom opacity-50 mt-1">Gestão de Leads</div>
+        </div>
+        <div class="w-px h-10 bg-marrom opacity-15 hidden md:block"></div>
+        <div>
+          <div class="font-display text-2xl font-medium text-marrom-dark">30 dias</div>
+          <div class="font-body text-xs uppercase tracking-widest text-marrom opacity-50 mt-1">Cronograma</div>
+        </div>
+        <div class="w-px h-10 bg-marrom opacity-15 hidden md:block"></div>
+        <div>
+          <div class="font-display text-2xl font-medium text-marrom-dark">R$ 3.200<span class="text-lg opacity-60">/mês</span></div>
+          <div class="font-body text-xs uppercase tracking-widest text-marrom opacity-50 mt-1">Investimento</div>
+        </div>
+        <div class="w-px h-10 bg-marrom opacity-15 hidden md:block"></div>
+        <div>
+          <div class="font-display text-2xl font-medium text-marrom-dark">2 agentes</div>
+          <div class="font-body text-xs uppercase tracking-widest text-marrom opacity-50 mt-1">WhatsApp IA</div>
         </div>
       </div>
-      <div class="header-badge">Proposta Comercial</div>
-    </header>
+    </section>
 
-    <div class="hero-body">
-      <p class="hero-eyebrow">Plano de Crescimento Digital</p>
-      <h1 class="hero-title">
-        Presença digital<br />
-        <em>do zero.</em>
-      </h1>
-      <p class="hero-sub">
-        Construção do Instagram, conteúdo semanal e Meta Ads direcionando 
-        leads qualificados direto para a Bruna no WhatsApp — em 30 dias.
-      </p>
-    </div>
-
-    <div class="hero-footer">
-      <div class="hero-meta">
-        <strong>Bruna</strong>
-        Gestão de Leads
+    <!-- ═══ LOGO FEATURE BREAK ═══ -->
+    <section class="relative py-20 flex items-center justify-center overflow-hidden" style="background: rgba(46,21,6,0.03);">
+      <div class="text-center reveal">
+        <img src="logo.jpeg" alt="Diferencial Soluções" class="w-40 h-40 rounded-3xl object-cover mx-auto shadow-2xl mb-8" style="box-shadow: 0 32px 80px rgba(46,21,6,0.22);" />
+        <div class="font-display text-3xl md:text-4xl text-marrom-dark font-medium italic">"Seu escritório no digital,<br/>sua IA no WhatsApp."</div>
       </div>
-      <div class="hero-divider"></div>
-      <div class="hero-meta">
-        <strong>30 dias</strong>
-        Cronograma
-      </div>
-      <div class="hero-divider"></div>
-      <div class="hero-meta">
-        <strong>R$ 3.200/mês</strong>
-        Investimento
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════ ROADMAP ══════════════════════════ -->
-  <section class="roadmap-section">
-    <div class="reveal">
-      <p class="section-label">O que vamos fazer</p>
-      <h2 class="section-title">Quatro semanas,<br /><em>resultado real.</em></h2>
-    </div>
+    <!-- ═══ ROADMAP ═══ -->
+    <section class="relative py-24 px-6 md:px-16 lg:px-24 overflow-hidden" style="background: #F5F0E8;">
+      <div class="orb" style="width:400px;height:400px;background:rgba(201,169,110,0.08);top:-100px;right:0;"></div>
 
-    <div class="weeks-grid">
-
-      <div class="week-card reveal reveal-delay-1">
-        <p class="week-number">Semana 1</p>
-        <h3 class="week-title">Fundação</h3>
-        <ul class="week-items">
-          <li>Criação do perfil no Instagram</li>
-          <li>Bio + link WhatsApp da Bruna</li>
-          <li>Identidade visual definida</li>
-          <li>10–12 posts produzidos com IA</li>
-          <li>Perfil já nasce com corpo</li>
-        </ul>
+      <!-- Header -->
+      <div class="reveal mb-16">
+        <div class="flex items-center gap-3 mb-6">
+          <img src="logo.jpeg" alt="" class="section-logo" />
+          <div>
+            <div class="font-body text-xs uppercase tracking-widest text-gold mb-1" style="letter-spacing:0.22em;">O que vamos fazer</div>
+            <h2 class="font-display text-4xl md:text-6xl font-400 text-marrom-dark leading-tight">Quatro semanas,<br/><em class="italic text-marrom">resultado real.</em></h2>
+          </div>
+        </div>
       </div>
 
-      <div class="week-card reveal reveal-delay-2">
-        <p class="week-number">Semana 2</p>
-        <h3 class="week-title">Primeiro anúncio</h3>
-        <ul class="week-items">
-          <li>Configuração do Meta Ads</li>
-          <li>Campanha: mensagens no WhatsApp</li>
-          <li>Verba inicial: R$ 20/dia</li>
-          <li>1 criativo de teste</li>
-          <li>3 posts orgânicos no feed</li>
-        </ul>
+      <!-- Week grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+
+        <div class="week-card reveal" style="transition-delay:0.1s;">
+          <div class="font-body text-xs uppercase tracking-widest text-gold mb-3" style="letter-spacing:0.2em;">Semana 1</div>
+          <h3 class="font-display text-2xl font-medium text-marrom-dark mb-6">Fundação</h3>
+          <ul class="space-y-3">
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Criação do perfil no Instagram
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Bio + link WhatsApp da Bruna
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Identidade visual definida
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>10–12 posts produzidos com IA
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Perfil já nasce com corpo
+            </li>
+          </ul>
+        </div>
+
+        <div class="week-card reveal" style="transition-delay:0.2s;">
+          <div class="font-body text-xs uppercase tracking-widest text-gold mb-3" style="letter-spacing:0.2em;">Semana 2</div>
+          <h3 class="font-display text-2xl font-medium text-marrom-dark mb-6">Primeiro anúncio</h3>
+          <ul class="space-y-3">
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Configuração do Meta Ads
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Campanha: mensagens no WhatsApp
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Verba inicial: R$ 20/dia
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>1 criativo de teste
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>3 posts orgânicos no feed
+            </li>
+          </ul>
+        </div>
+
+        <div class="week-card reveal" style="transition-delay:0.3s;">
+          <div class="font-body text-xs uppercase tracking-widest text-gold mb-3" style="letter-spacing:0.2em;">Semana 3</div>
+          <h3 class="font-display text-2xl font-medium text-marrom-dark mb-6">Otimização</h3>
+          <ul class="space-y-3">
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Análise do que performou
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Troca ou escala de criativo
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Ajuste de público e verba
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Conteúdo orgânico contínuo
+            </li>
+          </ul>
+        </div>
+
+        <div class="week-card reveal" style="transition-delay:0.4s;">
+          <div class="font-body text-xs uppercase tracking-widest text-gold mb-3" style="letter-spacing:0.2em;">Semana 4</div>
+          <h3 class="font-display text-2xl font-medium text-marrom-dark mb-6">Relatório</h3>
+          <ul class="space-y-3">
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Conversas geradas pelos anúncios
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Custo por lead apurado
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Print dos resultados pro Léo
+            </li>
+            <li class="font-body text-sm text-marrom-mid font-light leading-relaxed flex gap-3">
+              <span class="text-gold mt-0.5 flex-shrink-0">—</span>Planejamento do mês 2
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ PRICING ═══ -->
+    <section class="relative py-24 px-6 md:px-16 lg:px-24 overflow-hidden" style="background: #2E1506;">
+      <!-- Large logo watermark right -->
+      <img src="logo.jpeg" alt="" style="position:absolute;right:-80px;bottom:-80px;width:480px;height:480px;object-fit:cover;border-radius:60px;opacity:0.06;pointer-events:none;" />
+
+      <div class="orb" style="width:600px;height:600px;background:rgba(201,169,110,0.06);top:-200px;left:-100px;"></div>
+
+      <div class="reveal mb-14">
+        <div class="flex items-center gap-3 mb-6">
+          <img src="logo.jpeg" alt="" class="section-logo" style="opacity:0.85;" />
+          <div>
+            <div class="font-body text-xs uppercase tracking-widest text-gold-light mb-1" style="letter-spacing:0.22em;color:#E2C99A;">Investimento</div>
+            <h2 class="font-display text-4xl md:text-6xl font-400 text-creme leading-tight">Um plano completo.<br/><em class="italic" style="color:#C9A96E;">Sem surpresas.</em></h2>
+          </div>
+        </div>
       </div>
 
-      <div class="week-card reveal reveal-delay-3">
-        <p class="week-number">Semana 3</p>
-        <h3 class="week-title">Otimização</h3>
-        <ul class="week-items">
-          <li>Análise do que performou</li>
-          <li>Troca ou escala de criativo</li>
-          <li>Ajuste de público e verba</li>
-          <li>Conteúdo orgânico contínuo</li>
-        </ul>
+      <div class="max-w-xl reveal">
+        <div class="pricing-card p-10 md:p-14">
+
+          <!-- Logo + badge -->
+          <div class="flex items-center gap-4 mb-8">
+            <img src="logo.jpeg" alt="Diferencial Soluções" class="w-20 h-20 rounded-2xl object-cover" style="box-shadow: 0 8px 32px rgba(0,0,0,0.4);" />
+            <div>
+              <div class="inline-block font-body text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-2" style="background:#C9A96E;color:#2E1506;letter-spacing:0.15em;">Plano Completo</div>
+              <div class="font-body text-xs uppercase tracking-widest" style="color:rgba(237,229,216,0.4);letter-spacing:0.18em;">Gestão Digital Mensal</div>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="mb-2">
+            <span class="font-display" style="font-size:clamp(64px,9vw,96px);font-weight:300;color:#EDE5D8;line-height:1;">
+              <sup style="font-size:0.32em;vertical-align:super;color:#C9A96E;font-family:'Outfit',sans-serif;">R$&nbsp;</sup><span id="price-counter">3.200</span>
+            </span>
+          </div>
+          <div class="font-body text-sm mb-10" style="color:rgba(237,229,216,0.35);letter-spacing:0.08em;">por mês · contrato mensal renovável</div>
+
+          <div style="height:1px;background:rgba(201,169,110,0.15);margin-bottom:36px;"></div>
+
+          <ul class="space-y-4">
+            <li class="flex items-center gap-4 font-body text-sm font-light" style="color:rgba(237,229,216,0.8);">
+              <span class="feat-dot">💬</span>2 agentes Bruna no WhatsApp
+            </li>
+            <li class="flex items-center gap-4 font-body text-sm font-light" style="color:rgba(237,229,216,0.8);">
+              <span class="feat-dot">📸</span>Criação e gestão do Instagram
+            </li>
+            <li class="flex items-center gap-4 font-body text-sm font-light" style="color:rgba(237,229,216,0.8);">
+              <span class="feat-dot">🎨</span>Criativos semanais com IA
+            </li>
+            <li class="flex items-center gap-4 font-body text-sm font-light" style="color:rgba(237,229,216,0.8);">
+              <span class="feat-dot">📣</span>Gestão dos anúncios no Meta Ads
+            </li>
+            <li class="flex items-center gap-4 font-body text-sm font-light" style="color:rgba(237,229,216,0.8);">
+              <span class="feat-dot">📊</span>Relatório mensal de resultados
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section class="relative py-28 px-6 md:px-16 lg:px-24 text-center overflow-hidden">
+      <div class="orb" style="width:400px;height:400px;background:rgba(107,58,31,0.07);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+
+      <!-- Big logo -->
+      <div class="reveal mb-10 flex justify-center">
+        <img src="logo.jpeg" alt="Diferencial Soluções" class="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover shadow-2xl" style="box-shadow:0 24px 64px rgba(46,21,6,0.2);" />
       </div>
 
-      <div class="week-card reveal reveal-delay-4">
-        <p class="week-number">Semana 4</p>
-        <h3 class="week-title">Relatório</h3>
-        <ul class="week-items">
-          <li>Conversas geradas pelos anúncios</li>
-          <li>Custo por lead apurado</li>
-          <li>Print dos resultados pro Léo</li>
-          <li>Planejamento do mês 2</li>
-        </ul>
+      <div class="reveal">
+        <div class="flex items-center justify-center gap-3 mb-8">
+          <span class="gold-line" style="margin-bottom:0;"></span>
+          <span class="font-body text-xs uppercase tracking-widest text-gold" style="letter-spacing:0.22em;">Próximo passo</span>
+          <span class="gold-line" style="margin-bottom:0;"></span>
+        </div>
+        <h2 class="font-display text-5xl md:text-7xl font-400 text-marrom-dark mb-5 leading-tight">
+          Pronto pra<br/><em class="italic text-marrom">começar?</em>
+        </h2>
+        <p class="font-body text-base text-marrom-mid opacity-60 mb-12 font-light">
+          Qualquer dúvida, chama no WhatsApp — a gente resolve rápido.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <button class="btn-cta" data-whatsapp>
+            <span>Fechar proposta no WhatsApp</span>
+          </button>
+          <button class="btn-ghost" onclick="window.print()">
+            Salvar PDF
+          </button>
+        </div>
       </div>
+    </section>
 
-    </div>
-  </section>
-
-  <!-- ══════════════════════════ PRICING ══════════════════════════ -->
-  <section class="pricing-section">
-    <div class="reveal" style="margin-bottom: 48px;">
-      <p class="section-label">Investimento</p>
-      <h2 class="section-title">Um plano completo.<br /><em>Sem surpresas.</em></h2>
-    </div>
-
-    <div class="pricing-card reveal">
-      <div class="pricing-badge">Plano Completo</div>
-
-      <div class="pricing-logo-wrap">
-        <img src="logo.jpeg" alt="D" />
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="flex items-center justify-between px-6 md:px-16 py-7 border-t border-marrom border-opacity-10">
+      <div class="flex items-center gap-3">
+        <img src="logo.jpeg" alt="" class="w-8 h-8 rounded-lg object-cover opacity-70" />
+        <span class="font-body text-xs text-marrom opacity-40">Diferencial Soluções © 2026</span>
       </div>
+      <span class="font-body text-xs text-marrom opacity-40">Proposta válida por 7 dias</span>
+    </footer>
 
-      <p class="pricing-plan-name">Gestão Digital Mensal</p>
+  </main>
 
-      <div class="pricing-value">
-        <sup>R$&nbsp;</sup><span class="price-counter">3.200</span>
-      </div>
-      <p class="pricing-period">por mês · contrato mensal renovável</p>
+  <script>
+    // ══ THREE.JS BACKGROUND ══
+    (function() {
+      const canvas = document.getElementById('three-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
 
-      <div class="pricing-divider"></div>
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.z = 5;
 
-      <ul class="pricing-features">
-        <li>
-          <span class="feat-icon">💬</span>
-          2 agentes Bruna no WhatsApp
-        </li>
-        <li>
-          <span class="feat-icon">📸</span>
-          Criação e gestão do Instagram
-        </li>
-        <li>
-          <span class="feat-icon">🎨</span>
-          Criativos semanais com IA
-        </li>
-        <li>
-          <span class="feat-icon">📣</span>
-          Gestão dos anúncios no Meta Ads
-        </li>
-        <li>
-          <span class="feat-icon">📊</span>
-          Relatório mensal de resultados
-        </li>
-      </ul>
-    </div>
-  </section>
+      // Floating particles
+      const geo = new THREE.BufferGeometry();
+      const count = 180;
+      const positions = new Float32Array(count * 3);
+      const sizes = new Float32Array(count);
 
-  <!-- ═══════════════════════════ CTA ════════════════════════════ -->
-  <section class="cta-section">
-    <div class="reveal">
-      <p class="section-label">Próximo passo</p>
-      <h2 class="section-title">Pronto pra começar?</h2>
-      <p class="cta-sub">Qualquer dúvida, chama no WhatsApp — a gente resolve rápido.</p>
-      <div>
-        <button class="btn-primary" data-whatsapp>
-          Fechar proposta no WhatsApp
-        </button>
-        <button class="btn-secondary" onclick="window.print()">
-          Salvar PDF
-        </button>
-      </div>
-    </div>
-  </section>
+      for (let i = 0; i < count; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 20;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+        sizes[i] = Math.random() * 2 + 0.5;
+      }
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-  <!-- ══════════════════════════ FOOTER ══════════════════════════ -->
-  <footer>
-    <span>Diferencial Soluções © 2026</span>
-    <span>Proposta válida por 7 dias</span>
-  </footer>
+      const mat = new THREE.PointsMaterial({
+        color: 0xC9A96E,
+        size: 0.06,
+        transparent: true,
+        opacity: 0.5,
+        sizeAttenuation: true,
+      });
 
-  <script src="script.js"></script>
+      const points = new THREE.Points(geo, mat);
+      scene.add(points);
+
+      // Slow drift lines
+      const lineGeo = new THREE.BufferGeometry();
+      const lineVerts = [];
+      for (let i = 0; i < 12; i++) {
+        const x1 = (Math.random() - 0.5) * 18;
+        const y1 = (Math.random() - 0.5) * 18;
+        const z1 = (Math.random() - 0.5) * 5;
+        lineVerts.push(x1, y1, z1, x1 + (Math.random()-0.5)*4, y1 + (Math.random()-0.5)*4, z1);
+      }
+      lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lineVerts), 3));
+      const lineMat = new THREE.LineBasicMaterial({ color: 0xC9A96E, transparent: true, opacity: 0.12 });
+      const lines = new THREE.LineSegments(lineGeo, lineMat);
+      scene.add(lines);
+
+      let scrollY = 0;
+      window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.003;
+        points.rotation.y = t * 0.08;
+        points.rotation.x = t * 0.04;
+        lines.rotation.y = -t * 0.05;
+        camera.position.y = -scrollY * 0.001;
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
+
+    // ══ GSAP LOADER ══
+    window.addEventListener('load', function() {
+      const tl = gsap.timeline();
+      let progress = 0;
+      const bar = document.getElementById('loader-bar');
+      const interval = setInterval(() => {
+        progress = Math.min(progress + Math.random() * 8, 95);
+        bar.style.width = progress + '%';
+        if (progress >= 95) clearInterval(interval);
+      }, 60);
+
+      tl.to('#loader-logo', { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' })
+        .to('#loader-brand', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.3')
+        .to('#loader-sub', { opacity: 1, duration: 0.5 }, '-=0.2')
+        .to('#loader-bar-wrap', { opacity: 1, duration: 0.4 }, '-=0.1')
+        .add(() => {
+          clearInterval(interval);
+          bar.style.width = '100%';
+        }, '+=0.5')
+        .to('#loader', {
+          yPercent: -100,
+          duration: 1,
+          ease: 'power4.inOut',
+          delay: 0.3,
+          onComplete: () => {
+            document.getElementById('loader').style.display = 'none';
+            initPageAnimations();
+          }
+        });
+    });
+
+    function initPageAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Hero entrance
+      gsap.to('#main-header', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.1 });
+      gsap.to('#hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.25 });
+      gsap.to('#hero-title', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.4 });
+      gsap.to('#hero-sub', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.6 });
+      gsap.to('#hero-stats', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.8 });
+
+      // Scroll reveals
+      document.querySelectorAll('.reveal').forEach((el, i) => {
+        const delay = parseFloat(el.style.transitionDelay) || 0;
+        gsap.to(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 88%',
+            once: true,
+          },
+          opacity: 1,
+          y: 0,
+          duration: 0.75,
+          delay: delay,
+          ease: 'power3.out'
+        });
+      });
+
+      // Price counter animation
+      ScrollTrigger.create({
+        trigger: '#price-counter',
+        start: 'top 80%',
+        once: true,
+        onEnter: () => {
+          const el = document.getElementById('price-counter');
+          let start = 0;
+          const target = 3200;
+          const dur = 1400;
+          const t0 = performance.now();
+          const tick = (now) => {
+            const p = Math.min((now - t0) / dur, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(eased * target).toLocaleString('pt-BR');
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      });
+    }
+
+    // WhatsApp CTA
+    const WHATSAPP = '5511999999999';
+    document.querySelectorAll('[data-whatsapp]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const msg = encodeURIComponent('Olá! Vi a proposta e tenho interesse no Plano de Crescimento Digital. Podemos conversar?');
+        window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, '_blank');
+      });
+    });
+  </script>
 </body>
 </html>
